@@ -5,52 +5,55 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ONGRegistrationSystem extends JFrame implements ActionListener {
-    private JTextField childNameField, guardianNameField, ageField, shoeSizeField, clothingSizeField, addressField;
+    private JTextField childNameField, guardianNameField, ageField, shoeSizeField, clothingSizeField, addressField, sponsorNameField;
     private JButton registerButton, searchButton, updateButton, deleteButton, listButton;
     private JTextArea displayArea;
 
     private ArrayList<String[]> childrenList;
 
     public ONGRegistrationSystem() {
-        setTitle("ONG Registration System");
+        setTitle("Sistema de Registro da ONG");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2));
-        inputPanel.add(new JLabel("Child's Name:"));
+        JPanel inputPanel = new JPanel(new GridLayout(8, 2));
+        inputPanel.add(new JLabel("Nome da Criança:"));
         childNameField = new JTextField();
         inputPanel.add(childNameField);
-        inputPanel.add(new JLabel("Guardian's Name:"));
+        inputPanel.add(new JLabel("Nome do Guardião:"));
         guardianNameField = new JTextField();
         inputPanel.add(guardianNameField);
-        inputPanel.add(new JLabel("Age:"));
+        inputPanel.add(new JLabel("Idade:"));
         ageField = new JTextField();
         inputPanel.add(ageField);
-        inputPanel.add(new JLabel("Shoe Size:"));
+        inputPanel.add(new JLabel("Tamanho do Sapato:"));
         shoeSizeField = new JTextField();
         inputPanel.add(shoeSizeField);
-        inputPanel.add(new JLabel("Clothing Size:"));
+        inputPanel.add(new JLabel("Tamanho da Roupa:"));
         clothingSizeField = new JTextField();
         inputPanel.add(clothingSizeField);
-        inputPanel.add(new JLabel("Address:"));
+        inputPanel.add(new JLabel("Endereço:"));
         addressField = new JTextField();
         inputPanel.add(addressField);
+        inputPanel.add(new JLabel("Nome do Padrinho:"));
+        sponsorNameField = new JTextField();
+        inputPanel.add(sponsorNameField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
-        registerButton = new JButton("Register");
+        registerButton = new JButton("Registrar");
         registerButton.addActionListener(this);
         buttonPanel.add(registerButton);
-        searchButton = new JButton("Search");
+        searchButton = new JButton("Pesquisar");
         searchButton.addActionListener(this);
         buttonPanel.add(searchButton);
-        updateButton = new JButton("Update");
+        updateButton = new JButton("Atualizar");
         updateButton.addActionListener(this);
         buttonPanel.add(updateButton);
-        deleteButton = new JButton("Delete");
+        deleteButton = new JButton("Deletar");
         deleteButton.addActionListener(this);
         buttonPanel.add(deleteButton);
-        listButton = new JButton("List All");
+        listButton = new JButton("Listar Todos");
         listButton.addActionListener(this);
         buttonPanel.add(listButton);
 
@@ -88,18 +91,19 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
         String shoeSize = shoeSizeField.getText();
         String clothingSize = clothingSizeField.getText();
         String address = addressField.getText();
+        String sponsorName = sponsorNameField.getText();
 
         try (FileWriter writer = new FileWriter("children_database.txt", true);
              BufferedWriter bw = new BufferedWriter(writer)) {
-            bw.write(childName + "," + guardianName + "," + age + "," + shoeSize + "," + clothingSize + "," + address);
+            bw.write(childName + "," + guardianName + "," + age + "," + shoeSize + "," + clothingSize + "," + address + "," + sponsorName);
             bw.newLine();
             bw.flush();
-            displayArea.setText("Child registered successfully!");
-            childrenList.add(new String[]{childName, guardianName, age, shoeSize, clothingSize, address});
+            displayArea.setText("Criança registrada com sucesso!");
+            childrenList.add(new String[]{childName, guardianName, age, shoeSize, clothingSize, address, sponsorName});
             clearFields();
         } catch (IOException ex) {
             ex.printStackTrace();
-            displayArea.setText("Error occurred while registering child.");
+            displayArea.setText("Ocorreu um erro ao registrar a criança.");
         }
     }
 
@@ -107,12 +111,12 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
         String searchName = childNameField.getText();
         for (String[] child : childrenList) {
             if (child[0].equals(searchName)) {
-                displayArea.setText("Child's Name: " + child[0] + "\nGuardian's Name: " + child[1] + "\nAge: " + child[2] +
-                        "\nShoe Size: " + child[3] + "\nClothing Size: " + child[4] + "\nAddress: " + child[5]);
+                displayArea.setText("Nome da Criança: " + child[0] + "\nNome do Guardião: " + child[1] + "\nIdade: " + child[2] +
+                        "\nTamanho do Sapato: " + child[3] + "\nTamanho da Roupa: " + child[4] + "\nEndereço: " + child[5] + "\nNome do Padrinho: " + child[6]);
                 return;
             }
         }
-        displayArea.setText("Child not found.");
+        displayArea.setText("Criança não encontrada.");
     }
 
     private void updateChild() {
@@ -124,13 +128,14 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
                 child[3] = shoeSizeField.getText();
                 child[4] = clothingSizeField.getText();
                 child[5] = addressField.getText();
+                child[6] = sponsorNameField.getText();
 
                 updateDatabase();
-                displayArea.setText("Child '" + searchName + "' updated successfully.");
+                displayArea.setText("Criança '" + searchName + "' atualizada com sucesso.");
                 return;
             }
         }
-        displayArea.setText("Child '" + searchName + "' not found.");
+        displayArea.setText("Criança '" + searchName + "' não encontrada.");
     }
 
     private void deleteChild() {
@@ -139,17 +144,17 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
             if (childrenList.get(i)[0].equals(deleteName)) {
                 childrenList.remove(i);
                 updateDatabase();
-                displayArea.setText("Child '" + deleteName + "' deleted successfully.");
+                displayArea.setText("Criança '" + deleteName + "' deletada com sucesso.");
                 return;
             }
         }
-        displayArea.setText("Child '" + deleteName + "' not found.");
+        displayArea.setText("Criança '" + deleteName + "' não encontrada.");
     }
 
     private void listAllChildren() {
         StringBuilder childrenInfo = new StringBuilder();
         for (String[] child : childrenList) {
-            childrenInfo.append("Child's Name: ").append(child[0]).append("\n");
+            childrenInfo.append("Nome da Criança: ").append(child[0]).append("\n");
         }
         displayArea.setText(childrenInfo.toString());
     }
@@ -161,6 +166,7 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
         shoeSizeField.setText("");
         clothingSizeField.setText("");
         addressField.setText("");
+        sponsorNameField.setText("");
     }
 
     private void loadDatabase() {
@@ -172,7 +178,7 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            displayArea.setText("Error occurred while loading database.");
+            displayArea.setText("Ocorreu um erro ao carregar o banco de dados.");
         }
     }
 
@@ -180,12 +186,12 @@ public class ONGRegistrationSystem extends JFrame implements ActionListener {
         try (FileWriter writer = new FileWriter("children_database.txt");
              BufferedWriter bw = new BufferedWriter(writer)) {
             for (String[] child : childrenList) {
-                bw.write(child[0] + "," + child[1] + "," + child[2] + "," + child[3] + "," + child[4] + "," + child[5]);
+                bw.write(child[0] + "," + child[1] + "," + child[2] + "," + child[3] + "," + child[4] + "," + child[5] + "," + child[6]);
                 bw.newLine();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            displayArea.setText("Error occurred while updating database.");
+            displayArea.setText("Ocorreu um erro ao atualizar o banco de dados.");
         }
     }
 
